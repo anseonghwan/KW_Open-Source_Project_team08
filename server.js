@@ -5,9 +5,11 @@ const WebSocket = require('ws');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
-const PORT = 4000;
+const PORT = 1000;
 
 app.use(express.static(__dirname));
+app.use('/images', express.static(__dirname + '/images'));
+
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');

@@ -7,7 +7,7 @@
     <title>저는 라이어입니다.</title>
     <style>
         canvas {
-            border: 1px solid black;
+            border: 1px solid white;
             display: block;
             margin: 20px auto;
         }
@@ -47,13 +47,20 @@
         <div class="color-block blue" data-color="blue"></div>
         <div class="color-block red" data-color="red"></div>
     </div>
-    <canvas id="drawingCanvas" width="500" height="500"></canvas>
+    <canvas id="drawingCanvas" width="600" height="600"></canvas>
     <button id="nextPersonBtn">다음 사람</button>
 
     <script>
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
+        const image = new Image(); // image 객체 선언
         let drawing = false;
+
+        // 업로드된 이미지를 로드
+        image.src = '/images/KakaoTalk_20241127_094639870.png'; // 업로드된 이미지 파일 경로
+        image.onload = () => {
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 배경으로 이미지 그리기
+        };
 
         // 기본 선 색상 설정
         ctx.lineWidth = 2;
@@ -103,8 +110,6 @@
 
             // 버튼 숨기기
             document.getElementById('nextPersonBtn').style.display = 'none';
-
-
         });
     </script>
 </body>
