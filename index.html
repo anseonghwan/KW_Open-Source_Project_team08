@@ -4,28 +4,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAIN!</title>
+    <title>Catch Liar - 대기 화면</title>
 </head>
 
 <body>
-    <h1 style="text-align: center;">홈페이지로 이동</h1>
+    <h1 style="text-align: center;">Catch Liar 대기 화면</h1>
+    <p style="text-align: center; font-size: 18px;">
+        아래 버튼을 클릭하여 각 역할의 페이지로 이동하거나, 게임을 시작하세요.
+    </p>
+
+    <!-- 기존 역할별 이동 버튼 -->
     <div style="text-align: center; margin-top: 20px;">
-        <!-- LIAR 페이지로 이동하는 버튼 -->
-        <button onclick="location.href='liar.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">LIAR 페이지로
-            이동</button>
-
-        <!-- USER1 페이지로 이동하는 버튼 -->
-        <button onclick="location.href='user1.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">USER1
-            페이지로 이동</button>
-
-        <!-- USER2 페이지로 이동하는 버튼 -->
-        <button onclick="location.href='user2.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">USER2
-            페이지로 이동</button>
-
-        <!-- USER3 페이지로 이동하는 버튼 -->
-        <button onclick="location.href='user3.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">USER3
-            페이지로 이동</button>
+        <button onclick="location.href='liar.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">라이어
+            페이지</button>
+        <button onclick="location.href='user1.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">유저
+            1</button>
+        <button onclick="location.href='user2.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">유저
+            2</button>
+        <button onclick="location.href='user3.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px;">유저
+            3</button>
     </div>
+
+    <!-- 게임 시작 버튼 -->
+    <div style="text-align: center; margin-top: 30px;">
+        <button onclick="startGame()"
+            style="padding: 15px 30px; font-size: 18px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">
+            Start Game
+        </button>
+    </div>
+
+    <script>
+        function startGame() {
+            // 랜덤 페이지 배열
+            const pages = ['liar.html', 'user1.html', 'user2.html', 'user3.html'];
+
+            // 랜덤 인덱스 선택
+            const randomPage = pages[Math.floor(Math.random() * pages.length)];
+
+            // 랜덤 페이지로 이동
+            location.href = randomPage;
+        }
+    </script>
 </body>
 
 </html>
