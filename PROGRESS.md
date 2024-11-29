@@ -40,11 +40,11 @@ Web page를 세분화하여 구현할 예정.
 ## Individual Progress Status
 주제 재설정으로 인한 스케줄 조정을 위해 전체 팀원 오프라인 미팅을 통해   
 각 담당 분야 동시 협업 진행.
-### Front-End(안성환, 최승환)
+### Front-End(안성환, 최승환)[(commit link)](https://github.com/anseonghwan/KW_Open-Source_Project_team08/commit/4d6347d9fd111655d32298fd3393de4d999c4f8b)
 - 게임 접속 초입 Web Page 생성
 - User 참가 유형 별 접속 Web Page 생성.
 - Canvas(그림판) UI 구현
-### Back-End(강동민, 김도훈, 송일환)
+### Back-End(강동민, 김도훈, 송일환)[(commit link)](https://github.com/anseonghwan/KW_Open-Source_Project_team08/commit/ddf1ba06ef3fe85add36f23193ec3b769c9c7193)
 - 서버 구축 (AWS)
 - Client(User)의 Server 접속 구현
 - User의 Server 접속 Status 확인(Front-End) 구현
