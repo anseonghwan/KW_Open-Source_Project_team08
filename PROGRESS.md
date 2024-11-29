@@ -44,8 +44,8 @@ Web page를 세분화하여 구현할 예정.
 - 게임 접속 초입 Web Page 생성
 - User 참가 유형 별 접속 Web Page 생성.
 - Canvas(그림판) UI 구현
-### Back-End(강동민, 김도훈, 송일환)[(commit link)](https://github.com/anseonghwan/KW_Open-Source_Project_team08/commit/ddf1ba06ef3fe85add36f23193ec3b769c9c7193)
-- 서버 구축 (AWS)
+### Back-End(강동민, 김도훈, 송일환)[(commit link)](https://github.com/anseonghwan/KW_Open-Source_Project_team08/commit/0d40fb7f16caebb788f2bc92108a2bd2e3fa337f)
+- 서버 구축 (AWS) 및 자체 Web Page API 생성
 - Client(User)의 Server 접속 구현
 - User의 Server 접속 Status 확인(Front-End) 구현
 
