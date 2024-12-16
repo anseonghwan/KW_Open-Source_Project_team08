@@ -6,10 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>저는 라이어입니다.</title>
     <style>
+        body {
+            margin: 0;
+            padding: 0;
+            position: relative;
+        }
+
         canvas {
             border: 1px solid white;
             display: block;
             margin: 20px auto;
+            position: relative;
+            z-index: 2;
+            /* 캔버스를 이미지 위에 배치 */
+        }
+
+        .background-image {
+            position: absolute;
+            top: 50px;
+            /* 캔버스와 정렬을 위해 조정 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: 550px;
+            /* 캔버스와 동일한 크기 */
+            height: 620px;
+            z-index: 1;
+            /* 이미지를 캔버스 아래로 설정 */
+            pointer-events: none;
+            /* 이미지를 클릭할 수 없도록 설정 */
         }
 
         .color-palette {
@@ -47,20 +71,19 @@
         <div class="color-block blue" data-color="blue"></div>
         <div class="color-block red" data-color="red"></div>
     </div>
-    <canvas id="drawingCanvas" width="600" height="600"></canvas>
-    <button id="nextPersonBtn">다음 사람</button>
+
+    <!-- 배경 이미지 -->
+    <img src="./images/canvas.png" class="background-image" alt="배경 이미지">
+
+    <!-- 캔버스 -->
+    <canvas id="drawingCanvas" width="500" height="500"></canvas>
+    <button id="nextPersonBtn" style="display: block; margin: 20px auto;">다음 사람</button>
 
     <script>
         const canvas = document.getElementById('drawingCanvas');
         const ctx = canvas.getContext('2d');
-        const image = new Image(); // image 객체 선언
         let drawing = false;
 
-        // 업로드된 이미지를 로드
-        image.src = '/images/KakaoTalk_20241127_094639870.png'; // 업로드된 이미지 파일 경로
-        image.onload = () => {
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 배경으로 이미지 그리기
-        };
 
         // 기본 선 색상 설정
         ctx.lineWidth = 2;
