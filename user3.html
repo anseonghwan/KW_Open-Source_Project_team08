@@ -46,6 +46,11 @@
       <div class="color-block blue" data-color="blue"></div>
       <div class="color-block red" data-color="red"></div>
     </div>
+
+    <!-- 배경 이미지 -->
+    <img src="./images/canvas.png" class="background-image" alt="배경 이미지">
+
+    <!-- 캔버스 -->
     <canvas id="drawingCanvas" width="500" height="500"></canvas>
     <button id="nextPersonBtn" style="display: block; margin: 20px auto">
       다음 사람
@@ -113,7 +118,6 @@
         const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
         localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
         alert('그림이 저장되었습니다! user3 페이지로 이동합니다.');
-
         // 버튼 숨기기
         document.getElementById('nextPersonBtn').style.display = 'none';
       });
