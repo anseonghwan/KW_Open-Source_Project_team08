@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>저는 라이어입니다.</title>
+    <style>
+        canvas {
+            border: 1px solid white;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .color-block {
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            border: 1px solid black;
+            cursor: pointer;
+        }
+
+        .black {
+            background-color: black;
+        }
+
+        .blue {
+            background-color: blue;
+        }
+
+        .red {
+            background-color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 style="text-align: center;">저는 라이어 입니다. 모두를 속이세요.</h1>
+    <div class="color-palette">
+        <div class="color-block black" data-color="black"></div>
+        <div class="color-block blue" data-color="blue"></div>
+        <div class="color-block red" data-color="red"></div>
+    </div>
+    <canvas id="drawingCanvas" width="600" height="600"></canvas>
+    <button id="nextPersonBtn">다음 사람</button>
+
+    <script>
+        const canvas = document.getElementById('drawingCanvas');
+        const ctx = canvas.getContext('2d');
+        const image = new Image(); // image 객체 선언
+        let drawing = false;
+
+        // 업로드된 이미지를 로드
+        image.src = '/images/KakaoTalk_20241127_094639870.png'; // 업로드된 이미지 파일 경로
+        image.onload = () => {
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 배경으로 이미지 그리기
+        };
+
+        // 기본 선 색상 설정
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'black';
+
+        // 마우스 이벤트 설정
+        canvas.addEventListener('mousedown', (e) => {
+            drawing = true;
+            ctx.beginPath();
+            const rect = canvas.getBoundingClientRect();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!drawing) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        });
+
+        canvas.addEventListener('mouseup', () => {
+            drawing = false;
+        });
+
+        canvas.addEventListener('mouseout', () => {
+            drawing = false;
+        });
+
+        // 색상 블록 클릭 이벤트
+        const colorBlocks = document.querySelectorAll('.color-block');
+        colorBlocks.forEach((block) => {
+            block.addEventListener('click', () => {
+                const selectedColor = block.getAttribute('data-color');
+                ctx.strokeStyle = selectedColor;
+            });
+        });
+
+        // 다음 사람 버튼
+        document.getElementById('nextPersonBtn').addEventListener('click', () => {
+            const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
+            localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
+            alert('그림이 저장되었습니다! user1 페이지로 이동합니다.');
+
+            // 버튼 숨기기
+            document.getElementById('nextPersonBtn').style.display = 'none';
+        });
+    </script>
+</body>
+
+</html>
