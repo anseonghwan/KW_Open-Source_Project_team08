@@ -1,125 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>저는 유저1입니다.</title>
     <style>
-        canvas {
-            border: 1px solid black;
-            display: block;
-            margin: 20px auto;
-        }
+      canvas {
+        border: 1px solid black;
+        display: block;
+        margin: 20px auto;
+      }
 
-        .color-palette {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 10px;
-        }
+      .color-palette {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 10px;
+      }
 
-        .color-block {
-            width: 30px;
-            height: 30px;
-            margin: 0 5px;
-            border: 1px solid black;
-            cursor: pointer;
-        }
+      .color-block {
+        width: 30px;
+        height: 30px;
+        margin: 0 5px;
+        border: 1px solid black;
+        cursor: pointer;
+      }
 
-        .black {
-            background-color: black;
-        }
+      .black {
+        background-color: black;
+      }
 
-        .blue {
-            background-color: blue;
-        }
+      .blue {
+        background-color: blue;
+      }
 
-        .red {
-            background-color: red;
-        }
+      .red {
+        background-color: red;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-    <h1 style="text-align: center;">저는 유저1입니다.</h1>
+  <body>
+    <h1 style="text-align: center">당신은 유저1입니다.</h1>
     <div class="color-palette">
-        <div class="color-block black" data-color="black"></div>
-        <div class="color-block blue" data-color="blue"></div>
-        <div class="color-block red" data-color="red"></div>
+      <div class="color-block black" data-color="black"></div>
+      <div class="color-block blue" data-color="blue"></div>
+      <div class="color-block red" data-color="red"></div>
     </div>
     <canvas id="drawingCanvas" width="500" height="500"></canvas>
-    <button id="nextPersonBtn" style="display: block; margin: 20px auto;">다음 사람</button>
+    <button id="nextPersonBtn" style="display: block; margin: 20px auto">
+      다음 사람
+    </button>
 
     <script>
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        let drawing = false;
+      const canvas = document.getElementById('drawingCanvas');
+      const ctx = canvas.getContext('2d');
+      let drawing = false;
 
-        // 저장된 그림 가져오기
-        const savedDrawing = localStorage.getItem('savedDrawing');
-        if (savedDrawing) {
-            const img = new Image();
-            img.onload = () => {
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            };
-            img.src = savedDrawing;
-        } else {
-            alert('저장된 그림이 없습니다.');
-        }
+      // 저장된 그림 가져오기
+      const savedDrawing = localStorage.getItem('savedDrawing');
+      if (savedDrawing) {
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        };
+        img.src = savedDrawing;
+      } else {
+        alert('저장된 그림이 없습니다.');
+      }
 
-        // 기본 선 색상 및 설정
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-        ctx.strokeStyle = 'black';
+      // 기본 선 색상 및 설정
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.strokeStyle = 'black';
 
-        // 마우스 이벤트 설정
-        canvas.addEventListener('mousedown', (e) => {
-            drawing = true;
-            ctx.beginPath();
-            const rect = canvas.getBoundingClientRect();
-            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      // 마우스 이벤트 설정
+      canvas.addEventListener('mousedown', (e) => {
+        drawing = true;
+        ctx.beginPath();
+        const rect = canvas.getBoundingClientRect();
+        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      });
+
+      canvas.addEventListener('mousemove', (e) => {
+        if (!drawing) return;
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        ctx.lineTo(x, y);
+        ctx.stroke();
+      });
+
+      canvas.addEventListener('mouseup', () => {
+        drawing = false;
+      });
+
+      canvas.addEventListener('mouseout', () => {
+        drawing = false;
+      });
+
+      // 색상 블록 클릭 이벤트
+      const colorBlocks = document.querySelectorAll('.color-block');
+      colorBlocks.forEach((block) => {
+        block.addEventListener('click', () => {
+          const selectedColor = block.getAttribute('data-color');
+          ctx.strokeStyle = selectedColor;
         });
+      });
 
-        canvas.addEventListener('mousemove', (e) => {
-            if (!drawing) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
+      // 다음 사람 버튼
+      document.getElementById('nextPersonBtn').addEventListener('click', () => {
+        const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
+        localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
+        alert('그림이 저장되었습니다! user2 페이지로 이동합니다.');
 
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        });
-
-        canvas.addEventListener('mouseup', () => {
-            drawing = false;
-        });
-
-        canvas.addEventListener('mouseout', () => {
-            drawing = false;
-        });
-
-        // 색상 블록 클릭 이벤트
-        const colorBlocks = document.querySelectorAll('.color-block');
-        colorBlocks.forEach((block) => {
-            block.addEventListener('click', () => {
-                const selectedColor = block.getAttribute('data-color');
-                ctx.strokeStyle = selectedColor;
-            });
-        });
-
-        // 다음 사람 버튼
-        document.getElementById('nextPersonBtn').addEventListener('click', () => {
-            const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
-            localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
-            alert('그림이 저장되었습니다! user2 페이지로 이동합니다.');
-
-            // 버튼 숨기기
-            document.getElementById('nextPersonBtn').style.display = 'none';
-
-
-        });
+        // 버튼 숨기기
+        document.getElementById('nextPersonBtn').style.display = 'none';
+      });
     </script>
-
-</body>
-
+  </body>
 </html>
