@@ -1,126 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>저는 유저2입니다.</title>
-    <style>
-      canvas {
-        border: 1px solid black;
-        display: block;
-        margin: 20px auto;
-      }
+<html lang="ko">
 
-      .color-palette {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>저는 유저2입니다.</title>
+  <style>
+    body {
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      position: relative;
+    }
 
-      .color-block {
-        width: 30px;
-        height: 30px;
-        margin: 0 5px;
-        border: 1px solid black;
-        cursor: pointer;
-      }
+    .timer-container {
+      width: 80%;
+      height: 30px;
+      background-color: #ddd;
+      border-radius: 5px;
+      margin: 20px auto;
+      overflow: hidden;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
 
-      .black {
-        background-color: black;
-      }
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background-color: #4caf50;
+      transition: width 1s linear, background-color 1s linear;
+    }
 
-      .blue {
-        background-color: blue;
-      }
+    canvas {
+      border: 1px solid white;
+      /* 테두리 색상 변경 */
+      display: block;
+      margin: 20px auto;
+      background-color: transparent;
+      /* 캔버스 배경색 */
+      cursor: crosshair;
+      /* 그리기 커서 */
+      position: relative;
+      z-index: 2;
+      /* 캔버스를 이미지 위로 설정 */
+    }
 
-      .red {
-        background-color: red;
-      }
-    </style>
-  </head>
+    .background-image {
+      position: absolute;
+      top: 95px;
+      /* 캔버스와 정렬을 위해 조정 */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 580px;
+      /* 캔버스와 동일한 크기 */
+      height: 650px;
+      z-index: 1;
+      /* 이미지를 캔버스 아래로 설정 */
+      pointer-events: none;
+      /* 이미지를 클릭할 수 없도록 설정 */
+    }
 
-  <body>
-    <h1 style="text-align: center">당신은 유저2입니다.</h1>
-    <div class="color-palette">
-      <div class="color-block black" data-color="black"></div>
-      <div class="color-block blue" data-color="blue"></div>
-      <div class="color-block red" data-color="red"></div>
-    </div>
+    .color-palette {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
 
-    <!-- 배경 이미지 -->
-    <img src="./images/canvas.png" class="background-image" alt="배경 이미지">
+    .color-block {
+      width: 30px;
+      height: 30px;
+      margin: 0 5px;
+      border: 1px solid black;
+      cursor: pointer;
+    }
 
-    <!-- 캔버스 -->
+    .black {
+      background-color: black;
+    }
+
+    .blue {
+      background-color: blue;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    #nextPersonBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
+
+    #nextPersonBtn:hover {
+      background-color: #45a049;
+    }
+
+    .canvas-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 500px;
+      height: 500px;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      z-index: 10;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 500px;
+      height: 500px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <h1 id="user2Header" style="text-align: center;">저는 유저2입니다.</h1>
+
+  <div class="timer-container">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+
+  <div class="color-palette">
+    <div class="color-block black" data-color="black"></div>
+    <div class="color-block blue" data-color="blue"></div>
+    <div class="color-block red" data-color="red"></div>
+  </div>
+
+  <img src="./images/SketchBook.png" alt="배경 이미지" class="background-image">
+
+  <div class="canvas-wrapper">
     <canvas id="drawingCanvas" width="500" height="500"></canvas>
-    <button id="nextPersonBtn" style="display: block; margin: 20px auto">
-      다음 사람
-    </button>
+    <div class="canvas-overlay" id="canvasOverlay">
+      시간이 종료되었습니다!
+    </div>
+  </div>
 
-    <script>
-      const canvas = document.getElementById('drawingCanvas');
-      const ctx = canvas.getContext('2d');
-      let drawing = false;
+  <button id="nextPersonBtn">다음 사람</button>
 
-      // 저장된 그림 가져오기
-      const savedDrawing = localStorage.getItem('savedDrawing');
-      if (savedDrawing) {
-        const img = new Image();
-        img.onload = () => {
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        };
-        img.src = savedDrawing;
-      } else {
-        alert('저장된 그림이 없습니다.');
-      }
+  <script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+    let canDraw = true;
 
-      // 기본 선 색상 및 설정
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = 'black';
+    // 저장된 단어 가져오기
+    const randomWord = localStorage.getItem('randomWord');
 
-      // 마우스 이벤트 설정
-      canvas.addEventListener('mousedown', (e) => {
-        drawing = true;
-        ctx.beginPath();
-        const rect = canvas.getBoundingClientRect();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    // 선택된 단어를 헤더에 표시
+    const user2Header = document.getElementById('user2Header');
+    if (randomWord) {
+      user2Header.textContent = `저는 유저2입니다. 선택된 단어는 "${randomWord}"입니다.`;
+    }
+
+    // 저장된 그림 가져오기
+    const savedDrawing = localStorage.getItem('savedDrawing');
+    if (savedDrawing) {
+      const img = new Image();
+      img.onload = () => {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      };
+      img.src = savedDrawing;
+    } else {
+      alert('저장된 그림이 없습니다.');
+    }
+
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (!canDraw) return;
+      drawing = true;
+      ctx.beginPath();
+      const rect = canvas.getBoundingClientRect();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing || !canDraw) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (!canDraw) return;
+      drawing = false;
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      if (!canDraw) return;
+      drawing = false;
+    });
+
+    const colorBlocks = document.querySelectorAll('.color-block');
+    colorBlocks.forEach((block) => {
+      block.addEventListener('click', () => {
+        if (!canDraw) return;
+        const selectedColor = block.getAttribute('data-color');
+        ctx.strokeStyle = selectedColor;
       });
+    });
 
-      canvas.addEventListener('mousemove', (e) => {
-        if (!drawing) return;
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+    const nextPersonBtn = document.getElementById('nextPersonBtn');
+    nextPersonBtn.addEventListener('click', () => {
+      saveDrawing();
+    });
 
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      });
+    const timerBar = document.getElementById('timerBar');
+    const canvasOverlay = document.getElementById('canvasOverlay');
+    const totalTime = 5;
+    let timeLeft = totalTime;
+    let timerInterval;
 
-      canvas.addEventListener('mouseup', () => {
-        drawing = false;
-      });
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const percentage = (timeLeft / totalTime) * 100;
+        timerBar.style.width = percentage + '%';
 
-      canvas.addEventListener('mouseout', () => {
-        drawing = false;
-      });
+        const red = Math.floor((1 - timeLeft / totalTime) * 255);
+        const green = Math.floor((timeLeft / totalTime) * 255);
+        timerBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
 
-      // 색상 블록 클릭 이벤트
-      const colorBlocks = document.querySelectorAll('.color-block');
-      colorBlocks.forEach((block) => {
-        block.addEventListener('click', () => {
-          const selectedColor = block.getAttribute('data-color');
-          ctx.strokeStyle = selectedColor;
-        });
-      });
+        if (timeLeft < 0) {
+          clearInterval(timerInterval);
+          timerBar.style.width = '0%';
+          timerBar.style.backgroundColor = 'red';
+          canDraw = false;
+          canvasOverlay.style.display = 'flex';
+          alert('시간이 종료되었습니다! 그림을 더 이상 그릴 수 없습니다.');
+          saveDrawing();
+        }
+      }, 1000);
+    }
 
-      // 다음 사람 버튼
-      document.getElementById('nextPersonBtn').addEventListener('click', () => {
-        const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
-        localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
+    function saveDrawing() {
+      const imageData = canvas.toDataURL();
+      try {
+        localStorage.setItem('savedDrawing', imageData);
         alert('그림이 저장되었습니다! user3 페이지로 이동합니다.');
-        // 버튼 숨기기
-        document.getElementById('nextPersonBtn').style.display = 'none';
-      });
-    </script>
-  </body>
+        //window.location.href = 'user3.html';
+      } catch (e) {
+        console.error('그림 저장에 실패했습니다:', e);
+        alert('그림을 저장하는 데 문제가 발생했습니다.');
+      }
+      nextPersonBtn.style.display = 'none';
+    }
+
+    startTimer();
+  </script>
+</body>
+
 </html>
