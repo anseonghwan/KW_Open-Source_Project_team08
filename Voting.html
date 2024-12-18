@@ -174,15 +174,39 @@
         renderButtons();
 
         function submitVote(vote) {
-            votes[vote]++;
+            votes[vote]++; // 투표 수 증가
             currentPlayer++;
 
+            // 현재 투표자 정보 업데이트
             if (currentPlayer < remainingPlayers.length) {
                 document.getElementById('turnInfo').textContent = `${remainingPlayers[currentPlayer] + 1}번님의 투표 차례입니다.`;
             } else {
-                endVoting();
+                endVoting(); // 투표 종료
             }
+
+            // 서버로 투표 결과 전송
+            fetch('/submit-vote', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    vote: vote,
+                    currentVotes: votes,
+                    remainingPlayers: remainingPlayers,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === 'success') {
+                        console.log('서버로 투표 결과 전송 성공:', data.message);
+                    } else {
+                        console.error('서버에서 오류 발생:', data.message);
+                    }
+                })
+                .catch((error) => {
+                    console.error('서버로 투표 결과 전송 실패:', error);
+                });
         }
+
 
         function endVoting() {
             document.getElementById('turnInfo').classList.add('hidden');
@@ -204,6 +228,27 @@
                 resultsList.appendChild(li);
             });
 
+            // 서버로 최종 결과 전송
+            fetch('/final-results', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    finalVotes: votes,
+                    remainingPlayers: remainingPlayers,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.status === 'success') {
+                        alert('최종 결과가 서버에 성공적으로 전송되었습니다.');
+                    } else {
+                        alert('서버에서 오류가 발생했습니다. 다시 시도해주세요.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('서버로 최종 결과 전송 실패:', error);
+                });
+
             const liarReveal = document.getElementById('liarReveal');
             const liarOutcome = document.getElementById('liarOutcome');
             const liarMessage = document.getElementById('liarMessage');
@@ -216,7 +261,7 @@
 
             // 동률 확인
             if (tiedPlayers.length > 1) {
-                alert("투표가 동률입니다! 동률인 사람들만 다시 투표를 진행합니다.");
+                alert("투표가 동률입니다! 동률인 사람들만 다시 투표를 진행합니다. tlqkf 왜 안ㄷㅎ애");//여기야ㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏㅏ
                 renderButtons();
                 document.getElementById('finishVotingBtn').addEventListener('click', showResults);
                 return;
