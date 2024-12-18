@@ -1,10 +1,65 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
-  <meta charset="UTF-8">
-  <title>게임 결과</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>승리</title>
+  <style>
+    /* 전체 화면 스타일 */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #d7f1ff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      text-align: center;
+      box-sizing: border-box;
+    }
+
+    /* 로고 스타일 */
+    .logo {
+      width: 60%;
+      max-width: 600px;
+      margin-bottom: 20px;
+    }
+
+    /* 승리 메시지 스타일 */
+    .victory-text {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #000;
+      text-shadow: 2px 2px 5px #fff;
+      margin: 10px 0;
+    }
+
+    .liar-message {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #000;
+      margin: 0;
+    }
+
+    .highlight {
+      font-size: 1.6rem;
+      font-weight: bold;
+      color: black;
+      text-transform: uppercase;
+    }
+  </style>
 </head>
+
 <body>
-  <h1>축하합니다! 라이어를 잡았습니다! 🎉</h1>
+  <!-- 로고 이미지 -->
+  <img src="./images/CATCHLIAR_logo.png" alt="Catch Liar Logo" class="logo" />
+
+  <!-- 승리 메시지 -->
+  <div class="victory-text">!!!!VICTORY!!!!</div>
+  <div class="liar-message"><span class="highlight">LIAR</span>를 잡으셨습니다!</div>
 </body>
+
 </html>
