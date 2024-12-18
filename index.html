@@ -7,10 +7,28 @@
   <title>Catch Liar - 대기 화면</title>
 
   <style>
+    body {
+      display: flex;
+      justify-content: center;
+      /* 가로 중앙 정렬 */
+      align-items: center;
+      /* 세로 중앙 정렬 */
+      height: 100vh;
+      /* 화면 높이를 100% 사용 */
+      margin: 0;
+      /* 기본 마진 제거 */
+      background-color: #f0f0f0;
+      /* 배경색 설정 */
+    }
+
     #full {
       width: 800px;
       height: 610px;
       background-color: grey;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+      /* 그림자 추가 */
+      border-radius: 10px;
+      /* 모서리 둥글게 */
     }
 
     #screen_left {
@@ -28,68 +46,64 @@
       background-color: whitesmoke;
       float: left;
     }
+
+    .role-button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin: 15px;
+      /* 버튼 간 간격 설정 */
+    }
   </style>
 </head>
 
 <body>
-  <div style="text-align: right">
-    <img class="logo" src="./images/CATCHLIAR_logo.png" alt="CATCHLIAR logo" width="300px" height="180px" />
-  </div>
-  <h1 style="text-align: center">대기화면</h1>
-  <p style="text-align: center; font-size: 18px">
-    아래 버튼을 클릭하여 각 역할의 페이지로 이동하거나, 게임을 시작하세요.
-  </p>
-  <!-- Full screen-->
-  <div id="full">
-    <!-- 접속자 화면 -->
-    <div id="screen_left">
-      <h3>현재 접속자</h3>
-      <ul>
-        <li>KANG</li>
-        <li>AHN</li>
-        <li>SONG</li>
-        <li>CHOI</li>
-      </ul>
+  <div>
+    <div style="text-align: right">
+      <img class="logo" src="./images/CATCHLIAR_logo.png" alt="CATCHLIAR logo" width="150px" height="90px" />
     </div>
-    <!-- 시작 버튼 화면 -->
-    <div id="screen_right">
-      <!-- 기존 역할별 이동 버튼 -->
-      <div style="text-align: center; margin-top: 20px">
-        <button onclick="location.href='liar.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px">
-          라이어 페이지
-        </button>
-        <button onclick="location.href='user1.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px">
-          유저 1
-        </button>
-        <button onclick="location.href='user2.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px">
-          유저 2
-        </button>
-        <button onclick="location.href='user3.html'" style="padding: 10px 20px; font-size: 16px; margin: 5px">
-          유저 3
-        </button>
+    <h1 style="text-align: center">대기화면</h1>
+    <p style="text-align: center; font-size: 18px">Choose player mode you want!</p>
+    <!-- Full screen -->
+    <div id="full">
+      <!-- 접속자 화면 -->
+      <div id="screen_left">
+        <h3>현재 접속자</h3>
+        <ul>
+          <li>KANG</li>
+          <li>AHN</li>
+          <li>SONG</li>
+          <li>CHOI</li>
+        </ul>
+      </div>
+      <!-- 시작 버튼 화면 -->
+      <div id="screen_right">
+        <!-- 기존 역할별 이동 버튼 -->
+        <div style="text-align: center; margin-top: 20px">
+          <button onclick="location.href='liar.html'" class="role-button">Liar</button>
+          <button onclick="location.href='user1.html'" class="role-button">player1</button>
+          <button onclick="location.href='user2.html'" class="role-button">player2</button>
+          <button onclick="location.href='user3.html'" class="role-button">player3</button>
+        </div>
       </div>
     </div>
-  </div>
-  <!-- 게임 시작 버튼 -->
-  <div style="text-align: center; margin-top: 30px">
-    <button onclick="startGame()" style="
-          padding: 15px 30px;
-          font-size: 18px;
-          background-color: #28a745;
-          color: white;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-        ">
-      Start Game
-    </button>
+    <!-- 게임 시작 버튼 -->
+    <div style="text-align: center; margin-top: 10px">
+      <button onclick="startGame()" style="
+            padding: 15px 30px;
+            font-size: 18px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+          ">
+        Start Game
+      </button>
+    </div>
   </div>
 
   <script>
-
-
     function startGame() {
-
       // 단어 배열 정의
       const words = ['사자', '호랑이', '사슴', '코끼리'];
 
