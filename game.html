@@ -93,6 +93,22 @@
       margin-top: 20px;
       color: red;
     }
+
+    /* 다음 차례로 버튼 스타일 */
+    #next-turn-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.5rem;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #next-turn-btn:hover {
+      background-color: #45a049;
+    }
   </style>
 </head>
 
@@ -117,6 +133,9 @@
   <!-- 메시지 표시 -->
   <div id="message"></div>
 
+  <!-- 다음 차례로 넘기는 버튼 -->
+  <button id="next-turn-btn">Next Turn</button>
+
   <script>
     const canvas = document.getElementById("drawingCanvas");
     const ctx = canvas.getContext("2d");
@@ -124,6 +143,7 @@
     const turnInfo = document.getElementById("turnInfo");
     const message = document.getElementById("message");
     const categoryDisplay = document.getElementById("category");
+    const nextTurnButton = document.getElementById("next-turn-btn");
 
     // Local storage에서 카테고리 및 단어 가져오기
     const selectedCategory = localStorage.getItem("selectedCategory");
@@ -142,6 +162,7 @@
     const totalTime = 10; // 각 플레이어의 그리기 시간
     const pauseTime = 5; // 멈춤 시간
     let currentTime = 0;
+    let timerInterval; // 타이머 인터벌 참조 변수
 
     // 기본 그리기 설정
     ctx.lineWidth = 2;
@@ -187,12 +208,12 @@
       message.innerText = "Sketch with mouse!";
       turnInfo.innerText = `Number ${currentPlayer + 1} player's turn`;
 
-      const interval = setInterval(() => {
+      timerInterval = setInterval(() => {
         currentTime += 0.1;
         timerBar.style.width = ((totalTime - currentTime) / totalTime) * 100 + "%";
 
         if (currentTime >= totalTime) {
-          clearInterval(interval);
+          clearInterval(timerInterval);
           drawingEnabled = false; // 타이머 종료 시 그리기 비활성화
           isMouseDown = false; // 마우스 상태 초기화
           timerBar.style.width = "0%";
@@ -202,16 +223,26 @@
       }, 100);
     }
 
+    // 다음 차례로 버튼 클릭 이벤트
+    nextTurnButton.addEventListener("click", () => {
+      clearInterval(timerInterval); // 현재 타이머 멈춤
+      drawingEnabled = false; // 현재 그리기 비활성화
+      isMouseDown = false; // 마우스 상태 초기화
+      timerBar.style.width = "0%"; // 타이머 초기화
+      message.innerText = "Waiting Next player...";
+      setTimeout(nextPlayer, pauseTime * 1000); // 다음 사용자로 이동
+    });
+
     // 게임 종료
     function endGame() {
       drawingEnabled = false; // 게임 종료 시 그리기 비활성화
       isMouseDown = false; // 마우스 상태 초기화
-      message.innerText = "게임 종료!";
-      alert("모든 참가자가 그림을 그렸습니다. 투표를 시작합니다!");
-      window.location.href = "Voting.html"; // 투표 화면으로 이동
+      message.innerText = "Game Over!";
+      alert("All participants have drawn. Proceeding to voting!");
+      window.location.href = "Voting.html"; // Navigate to the voting screen
     }
 
-    // 게임 시작
+    // Start the game timer for the first player
     startTimer();
   </script>
 </body>
