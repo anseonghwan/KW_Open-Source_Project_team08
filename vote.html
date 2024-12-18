@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>라이어 투표</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      color: #333;
+      margin: 20px 0;
+    }
+
+    .vote-container {
+      margin: 20px auto;
+      max-width: 500px;
+      padding: 20px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .vote-button {
+      display: block;
+      margin: 10px auto;
+      padding: 10px 20px;
+      font-size: 18px;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .vote-button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>누가 라이어인지 투표하세요</h1>
+  <div class="vote-container" id="voteContainer"></div>
+
+  <script>
+    // 유저 리스트 (서버에서 받아오는 데이터)
+    const users = ['유저1', '유저2', '유저3', '라이어'];
+
+    // 투표 버튼 생성
+    const voteContainer = document.getElementById('voteContainer');
+    users.forEach((user) => {
+      const button = document.createElement('button');
+      button.className = 'vote-button';
+      button.innerText = user;
+      button.onclick = () => submitVote(user);
+      voteContainer.appendChild(button);
+    });
+
+    // 투표 제출
+    function submitVote(user) {
+      alert(`${user}에게 투표했습니다.`);
+      // 서버로 투표 결과 전송
+      fetch('/submit-vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ vote: user }),
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          alert(data.message);
+          if (data.nextPage) {
+            window.location.href = data.nextPage; // 결과 페이지로 이동
+          }
+        })
+        .catch((err) => console.error('투표 실패:', err));
+    }
+  </script>
+</body>
+
+</html>
