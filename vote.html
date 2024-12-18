@@ -2,87 +2,279 @@
 <html lang="ko">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>라이어 투표</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>라이어 게임 투표</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       text-align: center;
-      background-color: #f0f0f0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f8ff;
+      /* 연한 파랑 배경 */
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
       margin: 0;
-      padding: 0;
     }
 
-    h1 {
-      color: #333;
+    .vote-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 700px;
       margin: 20px 0;
     }
 
-    .vote-container {
-      margin: 20px auto;
-      max-width: 500px;
-      padding: 20px;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
     .vote-button {
-      display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
-      font-size: 18px;
-      background-color: #4caf50;
-      color: white;
-      border: none;
-      border-radius: 5px;
+      border: 3px solid black;
+      background-color: green;
+      font-size: 28px;
+      font-weight: bold;
       cursor: pointer;
+      border-radius: 10px;
+      color: white;
+      transition: all 0.3s ease;
+      text-align: center;
+      padding: 30px 60px;
     }
 
     .vote-button:hover {
-      background-color: #45a049;
+      transform: scale(1.1);
+      opacity: 0.9;
+    }
+
+    .vote-button:active {
+      transform: scale(0.95);
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #results {
+      margin-top: 20px;
+    }
+
+    button {
+      font-size: 22px;
+      padding: 20px 40px;
+      background-color: green;
+      color: white;
+      border: 2px solid black;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: darkgreen;
+    }
+
+    textarea {
+      width: 80%;
+      height: 100px;
+      font-size: 18px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      padding: 10px;
     }
   </style>
 </head>
 
 <body>
-  <h1>누가 라이어인지 투표하세요</h1>
-  <div class="vote-container" id="voteContainer"></div>
+  <h1>라이어 게임 투표</h1>
+  <p id="turnInfo">1번님의 투표 차례입니다.</p>
+
+  <div class="vote-buttons" id="voteButtons">
+    <!-- 버튼은 JavaScript에서 생성됩니다 -->
+  </div>
+
+  <button id="finishVotingBtn" class="hidden">결과 보기</button>
+
+  <div id="results" class="hidden">
+    <h2>투표 결과</h2>
+    <ul id="voteResults"></ul>
+    <h3 id="liarReveal"></h3>
+    <div id="liarOutcome" class="hidden">
+      <h3 id="liarMessage"></h3>
+      <textarea id="liarInput" class="hidden" placeholder="라이어의 주제를 적어보세요!"></textarea>
+      <button id="submitTopicBtn" class="hidden">주제 제출</button>
+      <p id="finalOutcome" class="hidden"></p>
+    </div>
+  </div>
 
   <script>
-    // 유저 리스트 (서버에서 받아오는 데이터)
-    const users = ['유저1', '유저2', '유저3', '라이어'];
+    // 동적으로 설정할 변수들
+    const numPlayers = parseInt(localStorage.getItem("participantCount")) || 4;
+    const liarIndex = parseInt(localStorage.getItem("liarIndex")) || 0;
+    let votes = JSON.parse(localStorage.getItem("votes")) || Array(numPlayers).fill(0);
+    let currentPlayer = 0;
+    let remainingPlayers = Array.from({ length: numPlayers }, (_, i) => i);
+    let actualTopic = localStorage.getItem("selectedWord"); // 게임 주제 (동적으로 설정 가능)
 
-    // 투표 버튼 생성
-    const voteContainer = document.getElementById('voteContainer');
-    users.forEach((user) => {
-      const button = document.createElement('button');
-      button.className = 'vote-button';
-      button.innerText = user;
-      button.onclick = () => submitVote(user);
-      voteContainer.appendChild(button);
-    });
 
-    // 투표 제출
-    function submitVote(user) {
-      alert(`${user}에게 투표했습니다.`);
+
+    const voteButtons = document.getElementById('voteButtons');
+    const renderButtons = () => {
+      voteButtons.innerHTML = ''; // 기존 버튼 초기화
+
+      if (remainingPlayers.length === 4) {
+        // 4명일 때: 두 줄에 2명씩 배치
+        const firstRow = document.createElement('div');
+        const secondRow = document.createElement('div');
+
+        firstRow.style.display = 'flex';
+        firstRow.style.justifyContent = 'center';
+        firstRow.style.gap = '20px';
+
+        secondRow.style.display = 'flex';
+        secondRow.style.justifyContent = 'center';
+        secondRow.style.gap = '20px';
+
+        remainingPlayers.forEach((player, index) => {
+          const button = document.createElement('button');
+          button.textContent = `${player + 1}번`;
+          button.className = 'vote-button';
+          button.style.padding = '20px 40px';
+
+          if (index < 2) {
+            firstRow.appendChild(button); // 첫 번째 줄에 추가
+          } else {
+            secondRow.appendChild(button); // 두 번째 줄에 추가
+          }
+
+          button.addEventListener('click', () => submitVote(player));
+        });
+
+        voteButtons.appendChild(firstRow);
+        voteButtons.appendChild(secondRow);
+      } else {
+        // 4명이 아닐 때: 기존 로직 (한 줄 또는 flex-wrap 처리)
+        voteButtons.style.display = 'flex';
+        voteButtons.style.flexWrap = 'wrap';
+        voteButtons.style.justifyContent = 'center';
+        voteButtons.style.gap = '20px';
+
+        remainingPlayers.forEach((player) => {
+          const button = document.createElement('button');
+          button.textContent = `${player + 1}번님`;
+          button.className = 'vote-button';
+          button.style.padding = '20px 40px';
+
+          voteButtons.appendChild(button);
+          button.addEventListener('click', () => submitVote(player));
+        });
+      }
+    };
+    renderButtons();
+
+    function submitVote(vote) {
+      votes[vote]++; // 투표 수 증가
+      currentPlayer++;
+
+      // 현재 투표자 정보 업데이트
+      if (currentPlayer < remainingPlayers.length) {
+        document.getElementById('turnInfo').textContent = `${remainingPlayers[currentPlayer] + 1}번님의 투표 차례입니다.`;
+      } else {
+        endVoting(); // 투표 종료
+      }
+
       // 서버로 투표 결과 전송
       fetch('/submit-vote', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ vote: user }),
+        body: JSON.stringify({
+          vote: vote,
+          currentVotes: votes,
+          remainingPlayers: remainingPlayers,
+        }),
       })
-        .then((res) => res.json())
+        .then((response) => response.json())
         .then((data) => {
-          alert(data.message);
-          if (data.nextPage) {
-            window.location.href = data.nextPage; // 결과 페이지로 이동
+          if (data.status === 'success') {
+            console.log('서버로 투표 결과 전송 성공:', data.message);
+          } else {
+            console.error('서버에서 오류 발생:', data.message);
           }
         })
-        .catch((err) => console.error('투표 실패:', err));
+        .catch((error) => {
+          console.error('서버로 투표 결과 전송 실패:', error);
+        });
     }
-  </script>
-</body>
 
-</html>
+
+    function endVoting() {
+      document.getElementById('turnInfo').classList.add('hidden');
+      document.getElementById('voteButtons').classList.add('hidden');
+      document.getElementById('finishVotingBtn').classList.remove('hidden');
+    }
+
+    document.getElementById('finishVotingBtn').addEventListener('click', showResults);
+
+    function showResults() {
+    document.getElementById('finishVotingBtn').classList.add('hidden');
+    document.getElementById('results').classList.remove('hidden');
+
+    const resultsList = document.getElementById('voteResults');
+    resultsList.innerHTML = '';
+    votes.forEach((count, index) => {
+      const li = document.createElement('li');
+      li.textContent = `${index + 1}번님: ${count}표`;
+      resultsList.appendChild(li);
+    });
+
+    const liarReveal = document.getElementById('liarReveal');
+    const liarOutcome = document.getElementById('liarOutcome');
+    const liarMessage = document.getElementById('liarMessage');
+    const liarInput = document.getElementById('liarInput');
+    const submitTopicBtn = document.getElementById('submitTopicBtn');
+    const finalOutcome = document.getElementById('finalOutcome');
+
+    const maxVotes = Math.max(...votes); // 가장 많이 받은 투표 수
+    const tiedPlayers = votes.filter((vote) => vote === maxVotes).length;
+
+    // 동률 확인
+    if (tiedPlayers > 1) {
+      alert("동률입니다. 게임을 다시합니다.");
+      window.location.href = "game.html"; // game.html로 이동
+      return;
+    }
+
+    // 라이어 확인
+    if (votes[liarIndex] === maxVotes) {
+      liarReveal.textContent = `라이어는 ${liarIndex + 1}번님입니다!`;
+      liarMessage.textContent = "라이어를 잡았습니다! 주제를 맞춰보세요.";
+      liarOutcome.classList.remove('hidden');
+      liarInput.classList.remove('hidden');
+      submitTopicBtn.classList.remove('hidden');
+
+      submitTopicBtn.onclick = () => {
+        const guessedTopic = liarInput.value.trim();
+        if (guessedTopic) {
+          if (guessedTopic === actualTopic) {
+            finalOutcome.textContent = "라이어가 이겼습니다!!!";
+          } else {
+            finalOutcome.textContent = `틀렸습니다! 정답: ${actualTopic}`;
+          }
+          finalOutcome.classList.remove('hidden');
+          liarInput.classList.add('hidden');
+          submitTopicBtn.classList.add('hidden');
+        } else {
+          alert("주제를 입력해주세요!");
+        }
+      };
+    } else {
+      // 라이어를 잡지 못한 경우 처리
+      liarReveal.textContent = "라이어를 잡지 못했습니다!";
+      liarMessage.textContent = `남은 플레이어로 게임을 계속 진행하세요.`;
+    }
+
+    localStorage.setItem("finalVotes", JSON.stringify(votes));
+  }
+</script>
