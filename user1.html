@@ -1,297 +1,191 @@
 <!DOCTYPE html>
 <html lang="ko">
-<!-- 언어를 한국어로 변경 -->
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>저는 유저1입니다.</title>
+  <title>Catch Liar - 유저1</title>
   <style>
+    /* 전체 화면 스타일 */
     body {
-      background-color: #f0f0f0;
-      /* 배경색 */
+      background-color: #d7f1ff;
       margin: 0;
       padding: 0;
       font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      box-sizing: border-box;
+      overflow: hidden; /* 스크롤 제거 */
+    }
+
+    /* 상단 바 스타일 */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       position: relative;
-      /* 플레이어 컨테이너의 절대 위치를 위한 부모 컨테이너 */
+      width: 95%;
+      max-width: 1200px;
+      margin: 5px auto;
     }
 
-    /* 타이머 바 컨테이너 */
+    .top-bar div {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      font-size: 1.3rem;
+      padding: 8px 15px;
+      font-weight: bold;
+    }
+
+    /* 로고: 중앙 배치, 타이머 위로 이동 */
+    .logo {
+      position: absolute;
+      top: -60px; /* 타이머 바와 겹치지 않도록 위로 이동 */
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px; /* 로고 크기 */
+      height: auto;
+    }
+
+    /* 타이머 바 */
     .timer-container {
-      width: 80%;
-      height: 30px;
-      background-color: #ddd;
-      border-radius: 5px;
-      margin: 20px auto;
+      width: 95%;
+      max-width: 1200px;
+      margin: 30px auto 5px; /* 타이머와 로고 사이 여백 확보 */
+      height: 15px;
+      background-color: #ccc;
+      border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     }
 
-    /* 실제 타이머 바 */
     .timer-bar {
       height: 100%;
-      width: 100%;
       background-color: #4caf50;
-      transition: width 1s linear, background-color 1s linear;
+      width: 100%;
+    }
+
+    /* 스케치북과 캔버스 */
+    .sketchbook-wrapper {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background: url('./images/SketchBook.png') no-repeat center;
+      background-size: 100% 100%;
+      margin: 10px auto;
     }
 
     canvas {
-      border: 1px solid white;
-      /* 테두리 색상 변경 */
-      display: block;
-      margin: 20px auto;
-      background-color: transparent;
-      /* 캔버스 배경색 */
-      cursor: crosshair;
-      /* 그리기 커서 */
-      position: relative;
-      z-index: 2;
-      /* 캔버스를 이미지 위로 설정 */
-    }
-
-    .background-image {
       position: absolute;
-      top: 95px;
-      /* 캔버스와 정렬을 위해 조정 */
-      left: 50%;
-      transform: translateX(-50%);
-      width: 580px;
-      /* 캔버스와 동일한 크기 */
-      height: 650px;
-      z-index: 1;
-      /* 이미지를 캔버스 아래로 설정 */
-      pointer-events: none;
-      /* 이미지를 클릭할 수 없도록 설정 */
-    }
-
-    .color-palette {
-      display: flex;
-      justify-content: center;
-      margin-bottom: 10px;
-    }
-
-    .color-block {
-      width: 30px;
-      height: 30px;
-      margin: 0 5px;
-      border: 1px solid black;
-      cursor: pointer;
-    }
-
-    .black {
-      background-color: black;
-    }
-
-    .blue {
-      background-color: blue;
-    }
-
-    .red {
-      background-color: red;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      cursor: crosshair;
     }
 
     /* 버튼 스타일 */
     #nextPersonBtn {
-      display: block;
-      margin: 20px auto;
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
-      background-color: #4caf50;
+      margin-top: 10px;
+      padding: 10px 25px;
+      font-size: 1.2rem;
+      font-weight: bold;
       color: white;
+      background-color: #4caf50;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     #nextPersonBtn:hover {
       background-color: #45a049;
     }
-
-    /* 비활성화된 상태의 캔버스 오버레이 */
-    .canvas-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 500px;
-      /* 캔버스와 동일한 너비 */
-      height: 500px;
-      /* 캔버스와 동일한 높이 */
-      background: rgba(255, 255, 255, 0.7);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      color: #333;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      z-index: 10;
-      /* 캔버스 위에 표시되도록 */
-    }
-
-    .canvas-wrapper {
-      position: relative;
-      width: 500px;
-      /* 캔버스 너비 */
-      height: 500px;
-      /* 캔버스 높이 */
-      margin: 0 auto;
-    }
   </style>
 </head>
 
 <body>
-  <h1 id="user1Header" style="text-align: center;">저는 유저1입니다.</h1>
+  <!-- 상단 바 -->
+  <div class="top-bar">
+    <div>주제</div>
+    <img src="./images/CATCHLIAR_logo.png" alt="Catch Liar Logo" class="logo" />
+    <div>당신은 유저1입니다.</div>
+  </div>
 
-  <!-- 타이머 바 추가 -->
+  <!-- 타이머 바 -->
   <div class="timer-container">
     <div class="timer-bar" id="timerBar"></div>
   </div>
 
-  <div class="color-palette">
-    <div class="color-block black" data-color="black"></div>
-    <div class="color-block blue" data-color="blue"></div>
-    <div class="color-block red" data-color="red"></div>
+  <!-- 스케치북 및 캔버스 -->
+  <div class="sketchbook-wrapper">
+    <canvas id="drawingCanvas" width="800" height="500"></canvas>
   </div>
 
-  <img src="./images/SketchBook.png" alt="배경 이미지" class="background-image">
-
-  <div class="canvas-wrapper">
-    <canvas id="drawingCanvas" width="500" height="500"></canvas>
-    <!-- 캔버스 오버레이 추가 -->
-    <div class="canvas-overlay" id="canvasOverlay">
-      시간이 종료되었습니다!
-    </div>
-  </div>
-
+  <!-- 다음 사람 버튼 -->
   <button id="nextPersonBtn">다음 사람</button>
 
   <script>
-    const canvas = document.getElementById('drawingCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("drawingCanvas");
+    const ctx = canvas.getContext("2d");
+    const timerBar = document.getElementById("timerBar");
+    const nextPersonBtn = document.getElementById("nextPersonBtn");
+
     let drawing = false;
-    let canDraw = true; // 그리기 가능 여부를 추적하는 플래그
 
-
-
-    // 저장된 단어 가져오기
-    const randomWord = localStorage.getItem('randomWord');
-
-    // 선택된 단어를 헤더에 표시
-    const user1Header = document.getElementById('user1Header');
-    if (randomWord) {
-      user1Header.textContent = `저는 유저1입니다. 선택된 단어는 "${randomWord}"입니다.`;
-    }
-
-    // 저장된 그림 가져오기
-    const savedDrawing = localStorage.getItem('savedDrawing');
-    if (savedDrawing) {
-      const img = new Image();
-      img.onload = () => {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      };
-      img.src = savedDrawing;
-    } else {
-      alert('저장된 그림이 없습니다.');
-    }
-
-    // 기본 선 색상 설정
+    // 기본 그리기 설정
     ctx.lineWidth = 2;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'black';
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "black";
 
-    // 마우스 이벤트 설정
-    canvas.addEventListener('mousedown', (e) => {
-      if (!canDraw) return; // 그리기 불가능 시 종료
+    canvas.addEventListener("mousedown", (e) => {
       drawing = true;
       ctx.beginPath();
-      const rect = canvas.getBoundingClientRect();
-      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+      ctx.moveTo(e.offsetX, e.offsetY);
     });
 
-    canvas.addEventListener('mousemove', (e) => {
-      if (!drawing || !canDraw) return; // 그리기 불가능 시 종료
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-
-      ctx.lineTo(x, y);
+    canvas.addEventListener("mousemove", (e) => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
       ctx.stroke();
     });
 
-    canvas.addEventListener('mouseup', () => {
-      if (!canDraw) return; // 그리기 불가능 시 종료
-      drawing = false;
-    });
+    canvas.addEventListener("mouseup", () => (drawing = false));
+    canvas.addEventListener("mouseout", () => (drawing = false));
 
-    canvas.addEventListener('mouseout', () => {
-      if (!canDraw) return; // 그리기 불가능 시 종료
-      drawing = false;
-    });
+    // 타이머 설정
+    const totalTime = 10; // 10초
+    let currentTime = 0;
 
-    // 색상 블록 클릭 이벤트
-    const colorBlocks = document.querySelectorAll('.color-block');
-    colorBlocks.forEach((block) => {
-      block.addEventListener('click', () => {
-        if (!canDraw) return; // 그리기 불가능 시 색상 변경 방지
-        const selectedColor = block.getAttribute('data-color');
-        ctx.strokeStyle = selectedColor;
-      });
-    });
-
-    // 다음 사람 버튼
-    const nextPersonBtn = document.getElementById('nextPersonBtn');
-    nextPersonBtn.addEventListener('click', () => {
-      saveDrawing();
-    });
-
-    // 타이머 바 설정
-    const timerBar = document.getElementById('timerBar');
-    const canvasOverlay = document.getElementById('canvasOverlay');
-    const totalTime = 5; // 총 시간 (초)
-    let timeLeft = totalTime;
-    let timerInterval;
-
-    // 타이머 시작 함수
     function startTimer() {
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        const percentage = (timeLeft / totalTime) * 100;
-        timerBar.style.width = percentage + '%';
+      const intervalTime = 50; // 밀리초 단위로 업데이트
+      const step = (100 / (totalTime * 1000)) * intervalTime; // 타이머 바 감소량
 
-        // 색상 변경: 녹색에서 빨간색으로
-        const red = Math.floor((1 - timeLeft / totalTime) * 255);
-        const green = Math.floor((timeLeft / totalTime) * 255);
-        timerBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
+      const timerInterval = setInterval(() => {
+        currentTime += intervalTime / 1000; // 초 단위 시간 업데이트
+        timerBar.style.width = (100 - step * (currentTime * 1000 / intervalTime)) + "%";
 
-        if (timeLeft < 0) {
+        if (currentTime >= totalTime) {
           clearInterval(timerInterval);
-          timerBar.style.width = '0%';
-          timerBar.style.backgroundColor = 'red'; // 최종 색상 설정
-          canDraw = false; // 그리기 불가능하게 설정
-          canvasOverlay.style.display = 'flex'; // 오버레이 표시
-          alert('시간이 종료되었습니다! 그림을 더 이상 그릴 수 없습니다.');
-          saveDrawing(); // 타이머 종료 시 자동 저장
+          timerBar.style.width = "0%";
+          alert("시간 종료!");
+          saveDrawing();
         }
-      }, 1000); // 1초마다 업데이트
+      }, intervalTime);
     }
 
     // 그림 저장 함수
     function saveDrawing() {
-      const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
-      try {
-        localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
-        alert('그림이 저장되었습니다! user2 페이지로 이동합니다.');
-        // "user2" 페이지로 이동하려면 아래 주석을 해제하고 실제 페이지 경로로 수정하세요.
-        // window.location.href = 'user2.html';
-      } catch (e) {
-        console.error('그림 저장에 실패했습니다:', e);
-        alert('그림을 저장하는 데 문제가 발생했습니다.');
-      }
-      // 버튼 숨기기
-      nextPersonBtn.style.display = 'none';
+      const drawingData = canvas.toDataURL();
+      localStorage.setItem("savedDrawing", drawingData);
+      alert("그림이 저장되었습니다!");
     }
+
+    nextPersonBtn.addEventListener("click", saveDrawing);
 
     // 타이머 시작
     startTimer();
