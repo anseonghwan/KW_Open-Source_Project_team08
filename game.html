@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Catch Liar - 게임 시작</title>
+  <style>
+    /* 전체 화면 스타일 */
+    body {
+      background-color: #d7f1ff;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    /* 상단 바 스타일 */
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      width: 95%;
+      max-width: 1200px;
+      margin: 5px auto;
+    }
+
+    .top-bar div {
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+      font-size: 1.3rem;
+      padding: 8px 15px;
+      font-weight: bold;
+    }
+
+    /* 로고 스타일 */
+    .logo {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: auto;
+    }
+
+    /* 타이머 바 */
+    .timer-container {
+      width: 95%;
+      max-width: 1200px;
+      margin: 30px auto 5px;
+      height: 15px;
+      background-color: #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .timer-bar {
+      height: 100%;
+      background-color: #4caf50;
+      width: 100%;
+    }
+
+    /* 스케치북과 캔버스 */
+    .sketchbook-wrapper {
+      position: relative;
+      width: 800px;
+      height: 500px;
+      background: url('./images/SketchBook.png') no-repeat center;
+      background-size: 100% 100%;
+      margin: 10px auto;
+    }
+
+    canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      cursor: crosshair;
+    }
+
+    /* 메시지 표시 */
+    #message {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-top: 20px;
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- 상단 바 -->
+  <div class="top-bar">
+    <div id="category">카테고리: </div>
+    <img src="./images/CATCHLIAR_logo.png" alt="Catch Liar Logo" class="logo" />
+    <div id="turnInfo">1번 플레이어 차례</div>
+  </div>
+
+  <!-- 타이머 바 -->
+  <div class="timer-container">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
+
+  <!-- 스케치북 및 캔버스 -->
+  <div class="sketchbook-wrapper">
+    <canvas id="drawingCanvas" width="800" height="500"></canvas>
+  </div>
+
+  <!-- 메시지 표시 -->
+  <div id="message"></div>
+
+  <script>
+    const canvas = document.getElementById("drawingCanvas");
+    const ctx = canvas.getContext("2d");
+    const timerBar = document.getElementById("timerBar");
+    const turnInfo = document.getElementById("turnInfo");
+    const message = document.getElementById("message");
+    const categoryDisplay = document.getElementById("category");
+
+    const liarCategory = "동물"; // 라이어의 카테고리 (예: 동물)
+    categoryDisplay.innerText = `카테고리: ${liarCategory}`; // 카테고리를 주제 칸에 출력
+
+    let isMouseDown = false; // 마우스 클릭 상태
+    let drawingEnabled = false; // 현재 플레이어가 그릴 수 있는지 여부
+    let currentPlayer = 0; // 현재 플레이어 인덱스
+    const participantCount = parseInt(localStorage.getItem("participantCount")) || 4; // 기본 4명
+    const totalTime = 10; // 각 플레이어의 그리기 시간
+    const pauseTime = 5; // 멈춤 시간
+    let currentTime = 0;
+
+    // 기본 그리기 설정
+    ctx.lineWidth = 2;
+    ctx.lineCap = "round";
+    ctx.strokeStyle = "black";
+
+    // 그리기 이벤트
+    canvas.addEventListener("mousedown", (e) => {
+      if (!drawingEnabled) return; // 플레이어 차례가 아니면 그리기 비활성화
+      isMouseDown = true; // 마우스 클릭 상태 활성화
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+    });
+
+    canvas.addEventListener("mousemove", (e) => {
+      if (!isMouseDown || !drawingEnabled) return; // 클릭하지 않으면 그리지 않음
+      ctx.lineTo(e.offsetX, e.offsetY);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener("mouseup", () => {
+      isMouseDown = false; // 마우스 업 시 그리기 종료
+    });
+
+    canvas.addEventListener("mouseout", () => {
+      isMouseDown = false; // 캔버스를 벗어나도 종료
+    });
+
+    // 다음 플레이어로 넘어가는 함수
+    function nextPlayer() {
+      currentPlayer++;
+      if (currentPlayer >= participantCount) {
+        endGame();
+      } else {
+        startTimer();
+      }
+    }
+
+    // 타이머 시작
+    function startTimer() {
+      currentTime = 0;
+      drawingEnabled = true; // 그리기 활성화
+      message.innerText = "마우스를 클릭해 그림을 그리세요!";
+      turnInfo.innerText = `${currentPlayer + 1}번 플레이어 차례`;
+
+      const interval = setInterval(() => {
+        currentTime += 0.1;
+        timerBar.style.width = ((totalTime - currentTime) / totalTime) * 100 + "%";
+
+        if (currentTime >= totalTime) {
+          clearInterval(interval);
+          drawingEnabled = false; // 타이머 종료 시 그리기 비활성화
+          isMouseDown = false; // 마우스 상태 초기화
+          timerBar.style.width = "0%";
+          message.innerText = "다음 사람 준비 중...";
+          setTimeout(nextPlayer, pauseTime * 1000); // 5초 멈춤 후 다음 사용자
+        }
+      }, 100);
+    }
+
+    // 게임 종료
+    function endGame() {
+      drawingEnabled = false; // 게임 종료 시 그리기 비활성화
+      isMouseDown = false; // 마우스 상태 초기화
+      message.innerText = "게임 종료!";
+      alert("모든 참가자가 그림을 그렸습니다. 투표를 시작합니다!");
+      window.location.href = "vote.html"; // 투표 화면으로 이동
+    }
+
+    // 게임 시작
+    startTimer();
+  </script>
+</body>
+
+</html>
