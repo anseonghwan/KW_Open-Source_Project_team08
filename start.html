@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catch Liar Game</title>
+    <style>
+        body {
+            background-color: #d7f1ff;
+            text-align: center;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 왼쪽 상단 버튼 스타일 */
+        .top-buttons {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .top-buttons button {
+            font-size: 1rem;
+            padding: 10px 20px;
+            background-color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .top-buttons button:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* 중앙 로고 */
+        #logo {
+            width: 300px;
+            margin-top: 150px; /* 로고 위치를 아래로 내려 버튼과 겹치지 않게 함 */
+        }
+
+        /* 참가자 정보 */
+        p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* 게임 시작 버튼 */
+        #game-start {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 30px;
+            padding: 10px 50px;
+            border: none;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+        }
+
+        #game-start:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 왼쪽 상단 버튼들 -->
+    <div class="top-buttons">
+        <button id="update-session">세션 스토리지 업데이트</button>
+        <button id="refresh-participants">참가자 목록 업데이트</button>
+        <button id="reset-button">초기화</button>
+    </div>
+
+    <!-- 중앙 이미지 로고 -->
+    <img id="logo" src="images/CATCHLIAR_logo.png" alt="Catch Liar Logo">
+
+    <!-- 참가자 정보 -->
+    <p>현재 참가자: <span id="participant-count">0</span>명</p>
+
+    <!-- 게임 시작 버튼 -->
+    <div>
+        <button id="game-start">게임 시작!</button>
+    </div>
+
+    <script>
+        // 간단한 버튼 동작 예시
+        document.getElementById("update-session").onclick = () => alert("세션 스토리지 업데이트 완료!");
+        document.getElementById("refresh-participants").onclick = () => alert("참가자 목록이 업데이트되었습니다.");
+        document.getElementById("reset-button").onclick = () => alert("초기화 완료!");
+        document.getElementById("game-start").onclick = () => alert("게임을 시작합니다!");
+    </script>
+</body>
+
+</html>
