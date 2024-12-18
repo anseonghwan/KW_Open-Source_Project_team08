@@ -22,46 +22,55 @@
         }
 
         /* 참가자 추가 버튼 */
-        #add-participant {
-            position: absolute;
-            top: 20px;
-            left: 20px;
+        #add-participant,
+        #sub-participant {
+            margin: 0 20px;
             background-color: #ffffff;
             border: none;
-            border-radius: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-            font-size: 1.2rem;
-            padding: 10px 20px;
+            border-radius: 50%;
+            font-size: 2rem;
+            width: 60px;
+            height: 60px;
+            padding: 0;
             cursor: pointer;
         }
 
-        #add-participant:hover {
+        #add-participant:hover,
+        #sub-participant:hover {
             background-color: #f0f0f0;
         }
 
         /* 로고 스타일 */
         #logo {
-            width: 300px;
-            margin-bottom: 20px;
+            width: 400px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            /* 둥근 모서리 적용 */
         }
 
         /* 참가자 정보 텍스트 */
         #participant-info {
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
             color: #000;
-            margin: 10px 0 30px;
+            margin: 20px 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #participant-info span {
+            margin: 0 10px;
         }
 
         /* 게임 시작 버튼 */
         #game-start {
-            font-size: 1.5rem;
+            font-size: 2rem;
             font-weight: bold;
-            padding: 15px 50px;
+            padding: 25px 70px;
             background-color: #ffffff;
             border: none;
-            border-radius: 10px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
             cursor: pointer;
         }
 
@@ -72,42 +81,49 @@
 </head>
 
 <body>
-    <!-- 참가자 추가 버튼 -->
-    <button id="add-participant">참가자 추가</button>
-
     <!-- 로고 이미지 -->
     <img id="logo" src="images/CATCHLIAR_logo.png" alt="Catch Liar Logo">
 
     <!-- 현재 참가자 정보 -->
     <div id="participant-info">
-        현재 참가자: <span id="participant-count">0</span>명
+        <button id="sub-participant">-</button>
+        현재 참가자: <span id="participant-count"> 0 </span>명
+        <button id="add-participant">+</button>
     </div>
 
     <!-- 게임 시작 버튼 -->
-    <button id="game-start">게임 시작!</button>
+    <button id="game-start">Catch Liar!</button>
 
     <script>
-      let participantCount = 0;
-    
-      const participantCountDisplay = document.getElementById("participant-count");
-    
-      // 참가자 추가 버튼 클릭 시
-      document.getElementById("add-participant").onclick = () => {
-        participantCount++;
-        participantCountDisplay.innerText = participantCount;
-      };
-    
-      // 게임 시작 버튼 클릭 시
-      document.getElementById("game-start").onclick = () => {
-        if (participantCount > 0) {
-          localStorage.setItem("participantCount", participantCount); // 참가자 수 저장
-          window.location.href = "roles.html"; // roles.html로 이동
-        } else {
-          alert("참가자를 추가해주세요!");
-        }
-      };
+        let participantCount = 0;
+        const participantCountDisplay = document.getElementById("participant-count");
+
+        // 참가자 추가 버튼 클릭 시       
+        document.getElementById("add-participant").onclick = () => {
+            participantCount++;
+            participantCountDisplay.innerText = participantCount;
+        };
+
+        // 참가자 감소 버튼 클릭 시       
+        document.getElementById("sub-participant").onclick = () => {
+            if (participantCount > 0) {
+                participantCount--;
+                participantCountDisplay.innerText = participantCount;
+            } else {
+                alert("더 이상 참가자를 줄일 수 없습니다!");
+            }
+        };
+
+        // 게임 시작 버튼 클릭 시       
+        document.getElementById("game-start").onclick = () => {
+            if (participantCount > 0) {
+                localStorage.setItem("participantCount", participantCount); // 참가자 수 저장           
+                window.location.href = "roles.html"; // roles.html로 이동         
+            } else {
+                alert("참가자를 추가해주세요!");
+            }
+        };     
     </script>
-    
 </body>
 
 </html>
