@@ -140,10 +140,13 @@
       roles = [];
       const liarIndex = Math.floor(Math.random() * participantCount); // 라이어는 무작위 1명
 
+      // 라이어 인덱스를 로컬 스토리지에 저장
+      localStorage.setItem("liarIndex", liarIndex);
+
       for (let i = 0; i < participantCount; i++) {
         roles.push(i === liarIndex ? `Liar :)
-${selectedCategory}` : `Dont' forget!
- ${selectedWord}`);
+        ${selectedCategory}` : `Dont' forget!
+        ${selectedWord}`);
       }
 
       for (let i = 0; i < participantCount; i++) {

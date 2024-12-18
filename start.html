@@ -114,6 +114,8 @@
             }
         };
 
+        localStorage.getItem("participantCount", participantCount);
+
         // 게임 시작 버튼 클릭 시       
         document.getElementById("game-start").onclick = () => {
             if (participantCount > 0) {

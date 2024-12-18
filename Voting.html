@@ -111,8 +111,8 @@
 
     <script>
         // 동적으로 설정할 변수들
-        let numPlayers = 4; // 플레이어 수
-        let liarIndex = 2; // 라이어 인덱스 (0부터 시작)
+        let numPlayers = localStorage.getItem("participantCount"); // 플레이어 수
+        let liarIndex = localStorage.getItem("liarIndex"); // 라이어 인덱스 (0부터 시작)
         let actualTopic = "사슴"; // 게임 주제 (동적으로 설정 가능)
 
         let votes = Array(numPlayers).fill(0);
