@@ -124,6 +124,8 @@
         const words = categories[selectedCategory];
         selectedWord = words[Math.floor(Math.random() * words.length)]; // 랜덤 단어 선택
         assignRoles();
+        localStorage.setItem("selectedCategory", selectedCategory); // 선택한 카테고리 저장
+        localStorage.setItem("selectedWord", selectedWord); // 선택한 단어 저장
       };
 
       categoryContainer.appendChild(categoryButton);

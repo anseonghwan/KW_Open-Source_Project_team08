@@ -106,11 +106,11 @@
 
         // 참가자 감소 버튼 클릭 시       
         document.getElementById("sub-participant").onclick = () => {
-            if (participantCount > 0) {
+            if (participantCount > 3) {
                 participantCount--;
                 participantCountDisplay.innerText = participantCount;
             } else {
-                alert("더 이상 참가자를 줄일 수 없습니다!");
+                alert("참가자는 4명 이상이어야 합니다!");
             }
         };
 
@@ -118,11 +118,11 @@
 
         // 게임 시작 버튼 클릭 시       
         document.getElementById("game-start").onclick = () => {
-            if (participantCount > 0) {
+            if (participantCount > 3) {
                 localStorage.setItem("participantCount", participantCount); // 참가자 수 저장           
                 window.location.href = "roles.html"; // roles.html로 이동         
             } else {
-                alert("참가자를 추가해주세요!");
+                alert("참가자는 4명 이상이어야 합니다!");
             }
         };     
     </script>
