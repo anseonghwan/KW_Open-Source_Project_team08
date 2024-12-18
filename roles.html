@@ -23,21 +23,21 @@
 
     /* 로고 스타일 */
     #logo {
-      position: absolute;
-      top: 20px;
-      right: 20px;
       width: 200px;
+      border-radius: 20px;
+      /* 둥근 모서리 적용 */
+      margin-bottom: 20px;
     }
 
     /* 역할 버튼 스타일 */
     .role-button {
       background-color: #ffffff;
-      border: 2px solid #ccc;
+      border: none;
       border-radius: 10px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
       font-size: 1.5rem;
       font-weight: bold;
-      margin: 10px 0;
+      margin: 10px 40px;
+      /* 버튼 간 좌우 간격 조정 */
       padding: 15px 50px;
       width: 300px;
       cursor: pointer;
@@ -57,12 +57,27 @@
       color: white;
       border: none;
       border-radius: 10px;
-      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
       cursor: pointer;
     }
 
     #start-game-btn:hover {
       background-color: #45a049;
+    }
+
+    /* 카테고리 선택 버튼 스타일 */
+    .category-button {
+      background-color: #ffffff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin: 10px;
+      padding: 10px 30px;
+      cursor: pointer;
+    }
+
+    .category-button:hover {
+      background-color: #f0f0f0;
     }
   </style>
 </head>
@@ -71,50 +86,92 @@
   <!-- 로고 이미지 -->
   <img id="logo" src="images/CATCHLIAR_logo.png" alt="Catch Liar Logo">
 
+  <!-- 카테고리 선택 버튼 리스트 -->
+  <div id="category-container"></div>
+
   <!-- 역할 버튼 리스트 -->
   <div id="role-container"></div>
 
   <!-- 게임 시작 버튼 -->
-  <button id="start-game-btn">게임 시작</button>
+  <button id="start-game-btn">Game Start!</button>
 
   <script>
     const participantCount = localStorage.getItem("participantCount") || 0; // 참가자 수 불러오기
     const roleContainer = document.getElementById("role-container");
+    const categoryContainer = document.getElementById("category-container");
 
-    const animals = ['사자', '호랑이', '사슴', '코끼리']; // 동물 배열
-    const liarIndex = Math.floor(Math.random() * participantCount); // 라이어는 무작위 1명
-    const selectedAnimal = animals[Math.floor(Math.random() * animals.length)]; // 일반 유저가 볼 동물
+    // 카테고리와 단어들
+    const categories = {
+      동물: ['사자', '호랑이', '사슴', '코끼리'],
+      음식: ['피자', '햄버거', '초밥', '스테이크'],
+      색상: ['빨강', '파랑', '초록', '노랑']
+    };
 
+    const categoryNames = Object.keys(categories);
+    let selectedCategory = null;
+    let selectedWord = null;
     let roles = [];
 
-    // 역할 초기화
-    for (let i = 0; i < participantCount; i++) {
-      roles.push(i === liarIndex ? "라이어 : 동물" : `일반유저 : ${selectedAnimal}`);
-    }
+    // 카테고리 버튼 생성
+    categoryNames.forEach(category => {
+      const categoryButton = document.createElement("button");
+      categoryButton.className = "category-button";
+      categoryButton.innerText = category;
 
-    // 버튼 생성
-    for (let i = 0; i < participantCount; i++) {
-      const roleButton = document.createElement("button");
-      roleButton.className = "role-button";
-      roleButton.innerText = "역할";
-
-      let isRevealed = false; // 버튼 상태 추적
-
-      roleButton.onclick = () => {
-        if (isRevealed) {
-          roleButton.innerText = "역할"; // 역할 버튼으로 돌아감
-          isRevealed = false;
-        } else {
-          roleButton.innerText = roles[i]; // 역할 보여줌
-          isRevealed = true;
-        }
+      categoryButton.onclick = () => {
+        selectedCategory = category;
+        const words = categories[selectedCategory];
+        selectedWord = words[Math.floor(Math.random() * words.length)]; // 랜덤 단어 선택
+        assignRoles();
       };
 
-      roleContainer.appendChild(roleButton);
+      categoryContainer.appendChild(categoryButton);
+    });
+
+    // 역할 초기화 및 버튼 생성
+    function assignRoles() {
+      if (!selectedCategory) {
+        alert("카테고리를 먼저 선택해주세요!");
+        return;
+      }
+
+      roleContainer.innerHTML = ""; // 기존 역할 버튼 제거
+      roles = [];
+      const liarIndex = Math.floor(Math.random() * participantCount); // 라이어는 무작위 1명
+
+      for (let i = 0; i < participantCount; i++) {
+        roles.push(i === liarIndex ? `Liar :)
+${selectedCategory}` : `Dont' forget!
+ ${selectedWord}`);
+      }
+
+      for (let i = 0; i < participantCount; i++) {
+        const roleButton = document.createElement("button");
+        roleButton.className = "role-button";
+        roleButton.innerText = i + 1;
+
+        let isRevealed = false; // 버튼 상태 추적
+
+        roleButton.onclick = () => {
+          if (isRevealed) {
+            roleButton.innerText = i + 1; // 역할 버튼으로 돌아감
+            isRevealed = false;
+          } else {
+            roleButton.innerText = roles[i]; // 역할 보여줌
+            isRevealed = true;
+          }
+        };
+
+        roleContainer.appendChild(roleButton);
+      }
     }
 
     // 게임 시작 버튼 클릭 이벤트
     document.getElementById("start-game-btn").onclick = () => {
+      if (!selectedCategory) {
+        alert("카테고리를 먼저 선택해주세요!");
+        return;
+      }
       window.location.href = "game.html"; // 게임 시작 화면으로 이동
     };
   </script>
