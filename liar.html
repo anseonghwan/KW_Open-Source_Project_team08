@@ -1,351 +1,356 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>저는 라이어입니다.</title>
-    <style>
-      body {
-        background-color: #f0f0f0; /* 배경색 */
-        margin: 0;
-        padding: 0;
-        font-family: Arial, sans-serif;
-        position: relative; /* 플레이어 컨테이너의 절대 위치를 위한 부모 컨테이너 */
-      }
 
-      /* 타이머 바 컨테이너 */
-      .timer-container {
-        width: 80%;
-        height: 30px;
-        background-color: #ddd;
-        border-radius: 5px;
-        margin: 20px auto;
-        overflow: hidden;
-        box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>저는 라이어입니다.</title>
+  <style>
+    body {
+      background-color: #f0f0f0;
+      /* 배경색 */
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      position: relative;
+      /* 플레이어 컨테이너의 절대 위치를 위한 부모 컨테이너 */
+    }
 
-      /* 실제 타이머 바 */
-      .timer-bar {
-        height: 100%;
-        width: 100%;
-        background-color: #4caf50;
-        transition: width 1s linear, background-color 1s linear;
-      }
+    /* 타이머 바 컨테이너 */
+    .timer-container {
+      width: 80%;
+      height: 30px;
+      background-color: #ddd;
+      border-radius: 5px;
+      margin: 20px auto;
+      overflow: hidden;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    }
 
-      canvas {
-        border: 1px solid white;
-        display: block;
-        margin: 20px auto;
-        background-color: #ffffff; /* 캔버스 배경색 */
-        cursor: crosshair; /* 그리기 커서 */
-      }
+    /* 실제 타이머 바 */
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background-color: #4caf50;
+      transition: width 1s linear, background-color 1s linear;
+    }
 
-      .color-palette {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 10px;
-      }
+    canvas {
+      border: 1px solid white;
+      display: block;
+      margin: 20px auto;
+      background-color: #ffffff;
+      /* 캔버스 배경색 */
+      cursor: crosshair;
+      /* 그리기 커서 */
+    }
 
-      .color-block {
-        width: 30px;
-        height: 30px;
-        margin: 0 5px;
-        border: 1px solid black;
-        cursor: pointer;
-      }
+    .color-palette {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
 
-      .black {
-        background-color: black;
-      }
+    .color-block {
+      width: 30px;
+      height: 30px;
+      margin: 0 5px;
+      border: 1px solid black;
+      cursor: pointer;
+    }
 
-      .blue {
-        background-color: blue;
-      }
+    .black {
+      background-color: black;
+    }
 
-      .red {
-        background-color: red;
-      }
+    .blue {
+      background-color: blue;
+    }
 
-      /* 버튼 스타일 */
-      #nextPersonBtn {
-        display: block;
-        margin: 20px auto;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-        background-color: #4caf50;
-        color: white;
-        border: none;
-        border-radius: 5px;
-      }
+    .red {
+      background-color: red;
+    }
 
-      #nextPersonBtn:hover {
-        background-color: #45a049;
-      }
+    /* 버튼 스타일 */
+    #nextPersonBtn {
+      display: block;
+      margin: 20px auto;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+    }
 
-      /* 비활성화된 상태의 캔버스 오버레이 */
-      .canvas-overlay {
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 600px;
-        height: 600px;
-        background: rgba(255, 255, 255, 0.7);
-        display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 24px;
-        color: #333;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        z-index: 10; /* 캔버스 위에 표시되도록 */
-      }
+    #nextPersonBtn:hover {
+      background-color: #45a049;
+    }
 
-      .canvas-wrapper {
-        position: relative;
-        width: 600px;
-        height: 600px;
-        margin: 0 auto;
-      }
+    /* 비활성화된 상태의 캔버스 오버레이 */
+    .canvas-overlay {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 600px;
+      height: 600px;
+      background: rgba(255, 255, 255, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      color: #333;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      z-index: 10;
+      /* 캔버스 위에 표시되도록 */
+    }
 
-      /* 플레이어 컨테이너 스타일 */
-      .players-container {
-        position: fixed;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 150px; /* 각 플레이어 블록의 너비 */
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
+    .canvas-wrapper {
+      position: relative;
+      width: 600px;
+      height: 600px;
+      margin: 0 auto;
+      z-index: 1;
+    }
 
-      /* 왼쪽 플레이어 컨테이너 (더 중앙으로 이동) */
+    /* 플레이어 컨테이너 스타일 */
+    .players-container {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      /* canvas 위에 나타나도록 설정 */
+    }
+
+    /* 왼쪽 플레이어 컨테이너 (더 중앙으로 이동) */
+    .players-left {
+      left: 20px;
+      /* 기존 20px에서 80px로 증가 */
+    }
+
+    /* 오른쪽 플레이어 컨테이너 (더 중앙으로 이동) */
+    .players-right {
+      right: 20px;
+      /* 기존 20px에서 80px로 증가 */
+    }
+
+    /* 개별 플레이어 스타일 */
+    .player {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .player img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #4caf50;
+    }
+
+    .player-name {
+      width: 100px;
+      height: 30px;
+      background-color: #4caf50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 5px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    /* 반응형 디자인을 위한 미디어 쿼리 */
+    @media (max-width: 801px) {
       .players-left {
-        left: 80px; /* 기존 20px에서 80px로 증가 */
+        margin-right: 20px;
+        /* 캔버스와의 간격 추가 */
       }
 
-      /* 오른쪽 플레이어 컨테이너 (더 중앙으로 이동) */
       .players-right {
-        right: 80px; /* 기존 20px에서 80px로 증가 */
+        margin-left: 20px;
+        /* 캔버스와의 간격 추가 */
       }
+    }
+  </style>
+</head>
 
-      /* 개별 플레이어 스타일 */
-      .player {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        margin-bottom: 20px;
-      }
+<body>
+  <h1 style="text-align: center">저는 라이어 입니다. 모두를 속이세요.</h1>
 
-      .player img {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #4caf50;
-      }
+  <!-- 타이머 바 추가 -->
+  <div class="timer-container">
+    <div class="timer-bar" id="timerBar"></div>
+  </div>
 
-      .player-name {
-        width: 100px;
-        height: 30px;
-        background-color: #4caf50;
-        color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 5px;
-        border-radius: 5px;
-        font-size: 14px;
-        text-align: center;
-      }
+  <!-- 플레이어 컨테이너 왼쪽 -->
+  <div class="players-container players-left">
+    <div class="player">
+      <img src="./images/player1.png" alt="Player 1" />
+      <div class="player-name">플레이어 1</div>
+    </div>
+    <div class="player">
+      <img src="./images/player2.png" alt="Player 2" />
+      <div class="player-name">플레이어 2</div>
+    </div>
+    <div class="player">
+      <img src="./images/player3.png" alt="Player 3" />
+      <div class="player-name">플레이어 3</div>
+    </div>
+  </div>
 
-      /* 반응형 디자인을 위한 미디어 쿼리 */
-      @media (max-width: 800px) {
-        .players-container {
-          display: none; /* 화면이 작아지면 플레이어 숨기기 */
+  <div class="color-palette">
+    <div class="color-block black" data-color="black"></div>
+    <div class="color-block blue" data-color="blue"></div>
+    <div class="color-block red" data-color="red"></div>
+  </div>
+
+  <div class="canvas-wrapper">
+    <canvas id="drawingCanvas" width="600" height="600"></canvas>
+    <!-- 캔버스 오버레이 추가 -->
+    <div class="canvas-overlay" id="canvasOverlay">
+      시간이 종료되었습니다!
+    </div>
+  </div>
+
+  <!-- 플레이어 컨테이너 오른쪽 -->
+  <div class="players-container players-right">
+    <div class="player">
+      <img src="./images/player4.png" alt="Player 4" />
+      <div class="player-name">플레이어 4</div>
+    </div>
+    <div class="player">
+      <img src="./images/player5.png" alt="Player 5" />
+      <div class="player-name">플레이어 5</div>
+    </div>
+    <div class="player">
+      <img src="./images/player6.png" alt="Player 6" />
+      <div class="player-name">플레이어 6</div>
+    </div>
+  </div>
+
+  <button id="nextPersonBtn">다음 사람</button>
+
+  <script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+    const image = new Image(); // image 객체 선언
+    let drawing = false;
+    let canDraw = true; // 그리기 가능 여부를 추적하는 플래그
+
+    // 업로드된 이미지를 로드
+    image.src = './images/SketchBook.png'; // 업로드된 이미지 파일 경로
+    image.onload = () => {
+      ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 배경으로 이미지 그리기
+    };
+
+    // 기본 선 색상 설정
+    ctx.lineWidth = 2;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = 'black';
+
+    // 마우스 이벤트 설정
+    canvas.addEventListener('mousedown', (e) => {
+      if (!canDraw) return; // 그리기 불가능 시 종료
+      drawing = true;
+      ctx.beginPath();
+      const rect = canvas.getBoundingClientRect();
+      ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!drawing || !canDraw) return; // 그리기 불가능 시 종료
+      const rect = canvas.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      ctx.lineTo(x, y);
+      ctx.stroke();
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (!canDraw) return; // 그리기 불가능 시 종료
+      drawing = false;
+    });
+
+    canvas.addEventListener('mouseout', () => {
+      if (!canDraw) return; // 그리기 불가능 시 종료
+      drawing = false;
+    });
+
+    // 색상 블록 클릭 이벤트
+    const colorBlocks = document.querySelectorAll('.color-block');
+    colorBlocks.forEach((block) => {
+      block.addEventListener('click', () => {
+        if (!canDraw) return; // 그리기 불가능 시 색상 변경 방지
+        const selectedColor = block.getAttribute('data-color');
+        ctx.strokeStyle = selectedColor;
+      });
+    });
+
+    // 다음 사람 버튼
+    const nextPersonBtn = document.getElementById('nextPersonBtn');
+    nextPersonBtn.addEventListener('click', () => {
+      saveDrawing();
+    });
+
+    // 타이머 바 설정
+    const timerBar = document.getElementById('timerBar');
+    const canvasOverlay = document.getElementById('canvasOverlay');
+    const totalTime = 5; // 총 시간 (초)
+    let timeLeft = totalTime;
+    let timerInterval;
+
+    // 타이머 시작 함수
+    function startTimer() {
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        const percentage = (timeLeft / totalTime) * 100;
+        timerBar.style.width = percentage + '%';
+
+        // 색상 변경: 녹색에서 빨간색으로
+        const red = Math.floor((1 - timeLeft / totalTime) * 255);
+        const green = Math.floor((timeLeft / totalTime) * 255);
+        timerBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
+
+        if (timeLeft < 0) {
+          clearInterval(timerInterval);
+          timerBar.style.width = '0%';
+          timerBar.style.backgroundColor = 'red'; // 최종 색상 설정
+          canDraw = false; // 그리기 불가능하게 설정
+          canvasOverlay.style.display = 'flex'; // 오버레이 표시
+          alert('시간이 종료되었습니다! 그림을 더 이상 그릴 수 없습니다.');
+          saveDrawing(); // 타이머 종료 시 자동 저장
         }
+      }, 1000); // 1초마다 업데이트
+    }
 
-        .timer-container {
-          width: 90%;
-        }
-
-        .canvas-wrapper {
-          width: 90%;
-          height: auto;
-        }
+    // 그림 저장 함수
+    function saveDrawing() {
+      const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
+      try {
+        localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
+        alert('그림이 저장되었습니다! user1 페이지로 이동합니다.');
+        // "user1" 페이지로 이동하려면 아래 주석을 해제하고 실제 페이지 경로로 수정하세요.
+        // window.location.href = 'user1.html';
+      } catch (e) {
+        console.error('그림 저장에 실패했습니다:', e);
+        alert('그림을 저장하는 데 문제가 발생했습니다.');
       }
-    </style>
-  </head>
+      // 버튼 숨기기
+      nextPersonBtn.style.display = 'none';
+    }
 
-  <body>
-    <h1 style="text-align: center">저는 라이어 입니다. 모두를 속이세요.</h1>
+    // 타이머 시작
+    startTimer();
+  </script>
+</body>
 
-    <!-- 타이머 바 추가 -->
-    <div class="timer-container">
-      <div class="timer-bar" id="timerBar"></div>
-    </div>
-
-    <!-- 플레이어 컨테이너 왼쪽 -->
-    <div class="players-container players-left">
-      <div class="player">
-        <img src="./images/player1.png" alt="Player 1" />
-        <div class="player-name">플레이어 1</div>
-      </div>
-      <div class="player">
-        <img src="./images/player2.png" alt="Player 2" />
-        <div class="player-name">플레이어 2</div>
-      </div>
-      <div class="player">
-        <img src="./images/player3.png" alt="Player 3" />
-        <div class="player-name">플레이어 3</div>
-      </div>
-    </div>
-
-    <div class="color-palette">
-      <div class="color-block black" data-color="black"></div>
-      <div class="color-block blue" data-color="blue"></div>
-      <div class="color-block red" data-color="red"></div>
-    </div>
-
-    <div class="canvas-wrapper">
-      <canvas id="drawingCanvas" width="600" height="600"></canvas>
-      <!-- 캔버스 오버레이 추가 -->
-      <div class="canvas-overlay" id="canvasOverlay">
-        시간이 종료되었습니다!
-      </div>
-    </div>
-
-    <!-- 플레이어 컨테이너 오른쪽 -->
-    <div class="players-container players-right">
-      <div class="player">
-        <img src="./images/player4.png" alt="Player 4" />
-        <div class="player-name">플레이어 4</div>
-      </div>
-      <div class="player">
-        <img src="./images/player5.png" alt="Player 5" />
-        <div class="player-name">플레이어 5</div>
-      </div>
-      <div class="player">
-        <img src="./images/player6.png" alt="Player 6" />
-        <div class="player-name">플레이어 6</div>
-      </div>
-    </div>
-
-    <button id="nextPersonBtn">다음 사람</button>
-
-    <script>
-      const canvas = document.getElementById('drawingCanvas');
-      const ctx = canvas.getContext('2d');
-      const image = new Image(); // image 객체 선언
-      let drawing = false;
-      let canDraw = true; // 그리기 가능 여부를 추적하는 플래그
-
-      // 업로드된 이미지를 로드
-      image.src = './images/SketchBook.png'; // 업로드된 이미지 파일 경로
-      image.onload = () => {
-        ctx.drawImage(image, 0, 0, canvas.width, canvas.height); // 배경으로 이미지 그리기
-      };
-
-      // 기본 선 색상 설정
-      ctx.lineWidth = 2;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = 'black';
-
-      // 마우스 이벤트 설정
-      canvas.addEventListener('mousedown', (e) => {
-        if (!canDraw) return; // 그리기 불가능 시 종료
-        drawing = true;
-        ctx.beginPath();
-        const rect = canvas.getBoundingClientRect();
-        ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
-      });
-
-      canvas.addEventListener('mousemove', (e) => {
-        if (!drawing || !canDraw) return; // 그리기 불가능 시 종료
-        const rect = canvas.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-
-        ctx.lineTo(x, y);
-        ctx.stroke();
-      });
-
-      canvas.addEventListener('mouseup', () => {
-        if (!canDraw) return; // 그리기 불가능 시 종료
-        drawing = false;
-      });
-
-      canvas.addEventListener('mouseout', () => {
-        if (!canDraw) return; // 그리기 불가능 시 종료
-        drawing = false;
-      });
-
-      // 색상 블록 클릭 이벤트
-      const colorBlocks = document.querySelectorAll('.color-block');
-      colorBlocks.forEach((block) => {
-        block.addEventListener('click', () => {
-          if (!canDraw) return; // 그리기 불가능 시 색상 변경 방지
-          const selectedColor = block.getAttribute('data-color');
-          ctx.strokeStyle = selectedColor;
-        });
-      });
-
-      // 다음 사람 버튼
-      const nextPersonBtn = document.getElementById('nextPersonBtn');
-      nextPersonBtn.addEventListener('click', () => {
-        saveDrawing();
-      });
-
-      // 타이머 바 설정
-      const timerBar = document.getElementById('timerBar');
-      const canvasOverlay = document.getElementById('canvasOverlay');
-      const totalTime = 5; // 총 시간 (초)
-      let timeLeft = totalTime;
-      let timerInterval;
-
-      // 타이머 시작 함수
-      function startTimer() {
-        timerInterval = setInterval(() => {
-          timeLeft--;
-          const percentage = (timeLeft / totalTime) * 100;
-          timerBar.style.width = percentage + '%';
-
-          // 색상 변경: 녹색에서 빨간색으로
-          const red = Math.floor((1 - timeLeft / totalTime) * 255);
-          const green = Math.floor((timeLeft / totalTime) * 255);
-          timerBar.style.backgroundColor = `rgb(${red}, ${green}, 0)`;
-
-          if (timeLeft < 0) {
-            clearInterval(timerInterval);
-            timerBar.style.width = '0%';
-            timerBar.style.backgroundColor = 'red'; // 최종 색상 설정
-            canDraw = false; // 그리기 불가능하게 설정
-            canvasOverlay.style.display = 'flex'; // 오버레이 표시
-            alert('시간이 종료되었습니다! 그림을 더 이상 그릴 수 없습니다.');
-            saveDrawing(); // 타이머 종료 시 자동 저장
-          }
-        }, 1000); // 1초마다 업데이트
-      }
-
-      // 그림 저장 함수
-      function saveDrawing() {
-        const imageData = canvas.toDataURL(); // 그림을 데이터 URL로 변환
-        try {
-          localStorage.setItem('savedDrawing', imageData); // 로컬 스토리지에 저장
-          alert('그림이 저장되었습니다! user1 페이지로 이동합니다.');
-          // "user1" 페이지로 이동하려면 아래 주석을 해제하고 실제 페이지 경로로 수정하세요.
-          // window.location.href = 'user1.html';
-        } catch (e) {
-          console.error('그림 저장에 실패했습니다:', e);
-          alert('그림을 저장하는 데 문제가 발생했습니다.');
-        }
-        // 버튼 숨기기
-        nextPersonBtn.style.display = 'none';
-      }
-
-      // 타이머 시작
-      startTimer();
-    </script>
-  </body>
 </html>
