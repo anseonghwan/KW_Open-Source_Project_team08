@@ -1,65 +1,65 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catch Liar Game</title>
+    <title>Catch Liar</title>
     <style>
+        /* 전체 화면 스타일 */
         body {
             background-color: #d7f1ff;
-            text-align: center;
-            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        /* 왼쪽 상단 버튼 스타일 */
-        .top-buttons {
+        /* 참가자 추가 버튼 */
+        #add-participant {
             position: absolute;
             top: 20px;
             left: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .top-buttons button {
-            font-size: 1rem;
-            padding: 10px 20px;
             background-color: #ffffff;
             border: none;
             border-radius: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            font-size: 1.2rem;
+            padding: 10px 20px;
             cursor: pointer;
-            text-align: left;
         }
 
-        .top-buttons button:hover {
+        #add-participant:hover {
             background-color: #f0f0f0;
         }
 
-        /* 중앙 로고 */
+        /* 로고 스타일 */
         #logo {
             width: 300px;
-            margin-top: 150px; /* 로고 위치를 아래로 내려 버튼과 겹치지 않게 함 */
+            margin-bottom: 20px;
         }
 
-        /* 참가자 정보 */
-        p {
+        /* 참가자 정보 텍스트 */
+        #participant-info {
             font-size: 1.5rem;
             font-weight: bold;
-            margin: 20px 0;
+            color: #000;
+            margin: 10px 0 30px;
         }
 
         /* 게임 시작 버튼 */
         #game-start {
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin-top: 30px;
-            padding: 10px 50px;
-            border: none;
+            padding: 15px 50px;
             background-color: #ffffff;
+            border: none;
             border-radius: 10px;
             box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
             cursor: pointer;
@@ -72,31 +72,42 @@
 </head>
 
 <body>
-    <!-- 왼쪽 상단 버튼들 -->
-    <div class="top-buttons">
-        <button id="update-session">세션 스토리지 업데이트</button>
-        <button id="refresh-participants">참가자 목록 업데이트</button>
-        <button id="reset-button">초기화</button>
-    </div>
+    <!-- 참가자 추가 버튼 -->
+    <button id="add-participant">참가자 추가</button>
 
-    <!-- 중앙 이미지 로고 -->
+    <!-- 로고 이미지 -->
     <img id="logo" src="images/CATCHLIAR_logo.png" alt="Catch Liar Logo">
 
-    <!-- 참가자 정보 -->
-    <p>현재 참가자: <span id="participant-count">0</span>명</p>
-
-    <!-- 게임 시작 버튼 -->
-    <div>
-        <button id="game-start">게임 시작!</button>
+    <!-- 현재 참가자 정보 -->
+    <div id="participant-info">
+        현재 참가자: <span id="participant-count">0</span>명
     </div>
 
+    <!-- 게임 시작 버튼 -->
+    <button id="game-start">게임 시작!</button>
+
     <script>
-        // 간단한 버튼 동작 예시
-        document.getElementById("update-session").onclick = () => alert("세션 스토리지 업데이트 완료!");
-        document.getElementById("refresh-participants").onclick = () => alert("참가자 목록이 업데이트되었습니다.");
-        document.getElementById("reset-button").onclick = () => alert("초기화 완료!");
-        document.getElementById("game-start").onclick = () => alert("게임을 시작합니다!");
+      let participantCount = 0;
+    
+      const participantCountDisplay = document.getElementById("participant-count");
+    
+      // 참가자 추가 버튼 클릭 시
+      document.getElementById("add-participant").onclick = () => {
+        participantCount++;
+        participantCountDisplay.innerText = participantCount;
+      };
+    
+      // 게임 시작 버튼 클릭 시
+      document.getElementById("game-start").onclick = () => {
+        if (participantCount > 0) {
+          localStorage.setItem("participantCount", participantCount); // 참가자 수 저장
+          window.location.href = "roles.html"; // roles.html로 이동
+        } else {
+          alert("참가자를 추가해주세요!");
+        }
+      };
     </script>
+    
 </body>
 
 </html>
